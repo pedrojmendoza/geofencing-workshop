@@ -1,1 +1,181 @@
+The geo-fencing creation application is based on [AWS Amplify](https://aws.amazon.com/amplify/) and specifically on React.
 
+To avoid facing issues with the local depedency management, we recommend you to create a new [Cloud9](https://aws.amazon.com/cloud9/) environment as IDE. We used a t2.micro instance running Amazon Linux.
+
+In order to create it, please follow the instructions detailed in the [Amplify React Tutorial](https://docs.amplify.aws/start/getting-started/installation/q/integration/react).
+
+Please note that when you initialize Amplify, it will create a new AWS profile on your Cloud9 environment and these credentials will be used.
+
+When creating the API key for your API (as part of the *Connect API and database to the app* step), you might want to use a value larger than 7 days for its expiration (we used 1 year expiration instead).
+
+When defining the GraphQL schema (as part of the *Connect API and database to the app* step), please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
+
+```
+type Geofence @model {
+  id: ID!
+  name: String!
+  geometry: String
+}
+```
+
+Feel free to skip (or adapt) the *Test your API* section (as it refers to the TODO entity testing rather than the Geofence).
+
+Next, install the dependecies require to include [Leaflet](https://leafletjs.com/) and [React Leaflet](https://react-leaflet.js.org/) by running the following:
+
+```
+npm install react-leaflet-draw react-leaflet leaflet-draw leaflet
+```
+
+When modifying the React front-end, instead of the instructions on the tutorial, modify the **src/App.js** file as follows:
+
+```
+/* src/App.js */
+import React, { useEffect, useState } from 'react'
+
+import { API, graphqlOperation } from 'aws-amplify'
+import { createGeofence } from './graphql/mutations'
+import { listGeofences } from './graphql/queries'
+import { Map, Popup, TileLayer, FeatureGroup, Polygon } from "react-leaflet";
+import { EditControl } from "react-leaflet-draw"
+import "./App.css";
+
+const App = () => {
+  const [formState, setFormState] = useState()
+  const [geofences, setGeofences] = useState([])
+  const [activeGeofence, setActiveGeofence] = useState(null);
+
+  // data operations
+  useEffect(() => {
+    fetchGeofences()
+  }, [])
+
+  function setInput(key, value) {
+    setFormState({ ...formState, [key]: value })
+  }
+
+  async function fetchGeofences() {
+    try {
+      const geofenceData = await API.graphql(graphqlOperation(listGeofences))
+      const geofences = geofenceData.data.listGeofences.items
+      setGeofences(geofences)
+    } catch (err) { console.log('error fetching geofences') }
+  }
+
+  return (
+    <>
+      <Map center={[45.4, -75.7]} zoom={11}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        />
+
+        <FeatureGroup>
+          <EditControl
+              position="topright"
+              onCreated={e => {
+                console.log(e);
+                //console.log(JSON.stringify(e.layer.toGeoJSON().geometry.coordinates));
+                // Reverse order of lat and lon
+                let latlons = [];
+                for (let lonlat of e.layer.toGeoJSON().geometry.coordinates[0]) {
+                  let latlon = [];
+                  latlon.push(lonlat[1], lonlat[0]);
+                  latlons.push(latlon);
+                }
+                const enteredName = prompt('Please enter the region name')
+                const geofence = {name: enteredName, geometry: JSON.stringify(latlons)}
+                API.graphql(graphqlOperation(createGeofence, {input: geofence}));
+                setGeofences([...geofences, geofence])          
+              }}
+              edit={{ remove: false, edit: false }}
+              draw={{
+                  marker: false,
+                  circlemarker: false,
+                  circle: false,
+                  rectangle: false,
+                  polygon: true,
+                  polyline: false
+              }}
+          />
+
+          {geofences.map(geofence => (
+            <Polygon
+              key={geofence.id}
+              id={geofence.id}
+              positions={JSON.parse(geofence.geometry)}
+              onClick={() => {
+                setActiveGeofence(geofence);
+              }}
+            />
+          ))}
+
+          {activeGeofence && (
+            <Popup
+              position={[
+                JSON.parse(activeGeofence.geometry)[0][1],
+                JSON.parse(activeGeofence.geometry)[0][0],
+              ]}
+              onClose={() => {
+                setActiveGeofence(null);
+              }}
+            >
+              <div>
+                <h2>{activeGeofence.name}</h2>
+              </div>
+            </Popup>
+          )}
+        </FeatureGroup>
+      </Map>
+      <div>
+        <input
+          id="geometry"
+          size="200"
+          onChange={event => setInput('geometry', event.target.value)}
+          value={activeGeofence ? activeGeofence.geometry : ""} 
+          placeholder="Geometry"
+          type="hidden"
+        />
+      </div>
+    </>
+  )
+}
+
+export default App
+```
+
+Additionally, you should modify the **public/index.html** file and add the following section to import the styles required by Leaflet.
+
+```
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />    
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.3/leaflet.draw.css"/>
+```
+
+And replace the contents of the **src/App.css** file with the following:
+
+```
+.leaflet-container {
+  width: 100%;
+  height: 90vh;
+}
+
+.sr-only {
+  display: none;
+}
+
+.container { 
+  width: 400;
+  margin: '0 auto';
+  display: 'flex';
+  flex: 1;
+  flexDirection: 'column';
+  justifyContent: 'center';
+  padding: 20 
+}
+```
+
+You find face issues if you try to access http://localhost:8080 on Cloud9 (development server) so move on to the *Add authentication* and then to *Deploy and host* section to directly see it working on a publicly accesible endpoint.
