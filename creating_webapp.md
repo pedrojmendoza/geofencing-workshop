@@ -8,7 +8,7 @@ Please note that when you initialize Amplify, it will create a new AWS profile o
 
 When creating the API key for your API (as part of the *Connect API and database to the app* step), you might want to use a value larger than 7 days for its expiration (we used 1 year expiration instead).
 
-When defining the GraphQL schema (as part of the *Connect API and database to the app* step), please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
+When defining the GraphQL schema (as part of the *Connect API and database to the app* step and before the initial *amplify push* to deploy the backend), please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
 
 ```
 type Geofence @model {
