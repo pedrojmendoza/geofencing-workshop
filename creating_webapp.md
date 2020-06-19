@@ -4,11 +4,13 @@ To avoid facing issues with the local depedency management, we recommend you to 
 
 In order to create it, please follow the instructions detailed in the [Amplify React Tutorial](https://docs.amplify.aws/start/getting-started/installation/q/integration/react).
 
-Please note that when you initialize Amplify, it will create a new AWS profile on your Cloud9 environment and these credentials will be used.
+1. As part of the [Prerequisites](https://docs.amplify.aws/start/getting-started/installation/q/integration/react) you will be initializing Amplify and that will create a new AWS profile on your Cloud9 environment and these credentials will be used.
 
-When creating the API key for your API (as part of the *Connect API and database to the app* step), you might want to use a value larger than 7 days for its expiration (we used 1 year expiration instead).
+2. Once initialize, feel free to [Set up fullstack project](https://docs.amplify.aws/start/getting-started/setup/q/integration/react) using the provided instructions.
 
-When defining the GraphQL schema (as part of the *Connect API and database to the app* step and before the initial *amplify push* to deploy the backend), please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
+3. When [Connecting the API and database to the app](https://docs.amplify.aws/start/getting-started/data-model/q/integration/react), you will be asked about the expiration of your API key, you might want to use a value larger than 7 days for its expiration (we used 1 year expiration instead). 
+
+Before the initial *amplify push* to deploy the backend), please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
 
 ```
 type Geofence @model {
@@ -179,3 +181,6 @@ And replace the contents of the **src/App.css** file with the following:
 ```
 
 You find face issues if you try to access http://localhost:8080 on Cloud9 (development server) so move on to the *Add authentication* and then to *Deploy and host* section to directly see it working on a publicly accesible endpoint.
+
+4. Once you are done with the above customizations, you are ready to [Add authentication](https://docs.amplify.aws/start/getting-started/auth/q/integration/react) and finally [Deploy and host app
+](https://docs.amplify.aws/start/getting-started/hosting/q/integration/react).
