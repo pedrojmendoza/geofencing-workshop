@@ -1,4 +1,4 @@
-# geofencing-workshop
+# IoT Geofencing Workshop
 
 In this workshop, we will walk you through the creation of a geofencing solution to compare the geolocation of IoT devices that are associated with one or more allowed geofences in order to quickly detect, visualize and notify those devices that are not within the allowed geofences.
 
@@ -10,7 +10,7 @@ The following diagram captures the complete architecture of the solution:
 
 ![Image of Architecture](arch.png)
 
-Lets move on the building and deployment of the solution following the steps below:
+Now that you have been introduced to the solution and its architecture, lets move on the building and deployment of the solution following the steps below:
 
 1. [Creating the geofences editor webapp](creating_webapp.md)
 2. [Setting up the device and its identity](setting_device.md)
