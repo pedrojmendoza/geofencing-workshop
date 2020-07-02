@@ -27,17 +27,14 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
 4. Now, lets create a new Lambda function.
 
-  4.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
+    4.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
 
-  4.2. Choose Create function and use the following parameters.
-
+    4.2. Choose Create function and use the following parameters.
     - Enter *DdbToS3ForSpatialQuerying* as function name.
-
     - Select *Python 3.8* as Runtime. 
-
     - Select *Use an existing role*, pick the *lambda-dynamodb-s3-role* from the dropdown and click on *Create function*
 
-  4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
+    4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
 ```
 import boto3
@@ -79,11 +76,9 @@ def lambda_handler(event, context):
     return True
 ```
 
-  4.4. Finally, connect your lambda with the DDB table.
-
-  - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
-
-  - Select the geofences table (should start with *Geofence-* and click on *Add*.
+    4.4. Finally, connect your lambda with the DDB table.
+    - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
+    - Select the geofences table (should start with *Geofence-* and click on *Add*.
 
 5. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
