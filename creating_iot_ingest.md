@@ -6,13 +6,13 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
 2. We will need a baseline JSON file to store the geofences geometries. Initially it will only contain some metadata and will be incrementally extended as the new geofences are added using the webapp. 
 
-2.1. Open the [S3 console](https://s3.console.aws.amazon.com/s3). 
+    2.1. Open the [S3 console](https://s3.console.aws.amazon.com/s3). 
 
-2.2. Click on your bucket name (the one you just created) to open it.
+    2.2. Click on your bucket name (the one you just created) to open it.
 
-2.3. Click on *Create Folder*, name it *Canada* and click *Save*
+    2.3. Click on *Create Folder*, name it *Canada* and click *Save*
 
-2.4. The baseline file is part of this repository and is named *regions.json*, upload it to your S3 bucket (inside the *Cananda* folder) by dragging and dropping it.
+    2.4. The baseline file is part of this repository and is named *regions.json*, upload it to your S3 bucket (inside the *Cananda* folder) by dragging and dropping it.
 
 3. Next, create a new IAM role for the lambda function that will be performing the data propagation.
 
