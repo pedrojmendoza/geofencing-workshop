@@ -213,8 +213,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
     8.3. Click on *Create* and enter the following values.
     - Name - *Geofencing*
     - Rule query statement, enter the below query. Make sure to replace the region and account number placeholders with the correct one (you can also copy and paste the ARN of the function created in 7).
-        SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'
-
+        `SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'
     - Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
     - Click on *Configure action* and enter *data/geofencing/processed* as destination topic.
     - Click on *Create Role* and enter *iot-republish* as role name.
