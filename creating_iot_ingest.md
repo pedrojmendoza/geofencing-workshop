@@ -36,42 +36,42 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
-    import boto3
-    import json
+        import boto3
+        import json
 
-    print('Loading function')
+        print('Loading function')
 
-    def lambda_handler(event, context):
-        print("Received event: " + json.dumps(event, indent=2))
+        def lambda_handler(event, context):
+            print("Received event: " + json.dumps(event, indent=2))
 
-        s3 = boto3.resource('s3')
-        regions_s3_object = s3.Object('<REPLACE_WITH_YOUR_BUCKET_NAME>', 'Canada/regions.json')
-        regions = json.loads(regions_s3_object.get()['Body'].read().decode('utf-8'))
+            s3 = boto3.resource('s3')
+            regions_s3_object = s3.Object('<REPLACE_WITH_YOUR_BUCKET_NAME>', 'Canada/regions.json')
+            regions = json.loads(regions_s3_object.get()['Body'].read().decode('utf-8'))
 
-        for record in event['Records']:
-            if 'NewImage' in record['dynamodb']:
-                new_name = record['dynamodb']['NewImage']['name']['S']
-                new_geometry = json.loads(record['dynamodb']['NewImage']['geometry']['S'])
+            for record in event['Records']:
+                if 'NewImage' in record['dynamodb']:
+                    new_name = record['dynamodb']['NewImage']['name']['S']
+                    new_geometry = json.loads(record['dynamodb']['NewImage']['geometry']['S'])
 
-                lons_lats = []
-                for lat_lon in new_geometry:
-                    lon_lat = []
-                    lon_lat.append(lat_lon[1])
-                    lon_lat.append(lat_lon[0])
-                    lons_lats.append(lon_lat)
+                    lons_lats = []
+                    for lat_lon in new_geometry:
+                        lon_lat = []
+                        lon_lat.append(lat_lon[1])
+                        lon_lat.append(lat_lon[0])
+                        lons_lats.append(lon_lat)
 
-                new_rings = []
-                new_rings.append(lons_lats)
+                    new_rings = []
+                    new_rings.append(lons_lats)
 
-                new_feature = {}
-                new_feature['attributes'] = {'NAME': new_name}
-                new_feature['geometry'] = {'rings': new_rings}
-                regions['features'].append(new_feature)
+                    new_feature = {}
+                    new_feature['attributes'] = {'NAME': new_name}
+                    new_feature['geometry'] = {'rings': new_rings}
+                    regions['features'].append(new_feature)
 
-        #print("extended regions: " + json.dumps(existing_regions, indent=2))
-        regions_s3_object.put(Body=(bytes(json.dumps(regions).encode('UTF-8'))))
+            #print("extended regions: " + json.dumps(existing_regions, indent=2))
+            regions_s3_object.put(Body=(bytes(json.dumps(regions).encode('UTF-8'))))
 
-        return True
+            return True
 
     4.4. Finally, connect your lambda with the DDB table.
     - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
@@ -85,17 +85,15 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     5.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
 
-```sql
-CREATE external TABLE IF NOT EXISTS regions
- (
- NAME string,
- BoundaryShape binary
- )
-ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
-STORED AS INPUTFORMAT 'com.esri.json.hadoop.EnclosedJsonInputFormat'
-OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
-```
+        CREATE external TABLE IF NOT EXISTS regions
+         (
+         NAME string,
+         BoundaryShape binary
+         )
+        ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
+        STORED AS INPUTFORMAT 'com.esri.json.hadoop.EnclosedJsonInputFormat'
+        OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+        LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 
     5.4. Click on *Run query*
 
@@ -121,90 +119,88 @@ LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 
     7.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
-```python
-import time
-import boto3
+        import time
+        import boto3
 
-# number of retries
-RETRY_COUNT = 10
+        # number of retries
+        RETRY_COUNT = 10
 
-def lambda_handler(event, context):
-    print(event)
+        def lambda_handler(event, context):
+            print(event)
 
-    # get input
-    device = event['device']
-    lon = event['lon'] #lon = -75.49
-    lat = event['lat'] #lat = 45.4
+            # get input
+            device = event['device']
+            lon = event['lon'] #lon = -75.49
+            lat = event['lat'] #lat = 45.4
 
-    # created query
-    query = "SELECT regions.name FROM default.regions WHERE ST_CONTAINS (regions.boundaryshape, ST_POINT(%s, %s))" % (lon, lat)
+            # created query
+            query = "SELECT regions.name FROM default.regions WHERE ST_CONTAINS (regions.boundaryshape, ST_POINT(%s, %s))" % (lon, lat)
 
-    # athena client
-    athena = boto3.client('athena')
+            # athena client
+            athena = boto3.client('athena')
 
-    # Execution
-    response = athena.start_query_execution(
-        QueryString=query,
-        QueryExecutionContext={
-            'Database': "default"
-        },
-        ResultConfiguration={
-            'OutputLocation': 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>',
-        }
-    )
+            # Execution
+            response = athena.start_query_execution(
+                QueryString=query,
+                QueryExecutionContext={
+                    'Database': "default"
+                },
+                ResultConfiguration={
+                    'OutputLocation': 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>',
+                }
+            )
 
-    # get query execution id
-    query_execution_id = response['QueryExecutionId']
-    #print(query_execution_id)
+            # get query execution id
+            query_execution_id = response['QueryExecutionId']
+            #print(query_execution_id)
 
-    # get execution status
-    for i in range(1, 1 + RETRY_COUNT):
+            # get execution status
+            for i in range(1, 1 + RETRY_COUNT):
 
-        # get query execution
-        query_status = athena.get_query_execution(QueryExecutionId=query_execution_id)
-        query_execution_status = query_status['QueryExecution']['Status']['State']
+                # get query execution
+                query_status = athena.get_query_execution(QueryExecutionId=query_execution_id)
+                query_execution_status = query_status['QueryExecution']['Status']['State']
 
-        if query_execution_status == 'SUCCEEDED':
-            #print("STATUS:" + query_execution_status)
-            break
+                if query_execution_status == 'SUCCEEDED':
+                    #print("STATUS:" + query_execution_status)
+                    break
 
-        if query_execution_status == 'FAILED':
-            raise Exception("STATUS:" + query_execution_status)
+                if query_execution_status == 'FAILED':
+                    raise Exception("STATUS:" + query_execution_status)
 
-        else:
-            #print("STATUS:" + query_execution_status)
-            time.sleep(0.2)
-    else:
-        athena.stop_query_execution(QueryExecutionId=query_execution_id)
-        raise Exception('TIME OVER')
+                else:
+                    #print("STATUS:" + query_execution_status)
+                    time.sleep(0.2)
+            else:
+                athena.stop_query_execution(QueryExecutionId=query_execution_id)
+                raise Exception('TIME OVER')
 
-    # get query results
-    result = athena.get_query_results(QueryExecutionId=query_execution_id)
-    #print(result)
+            # get query results
+            result = athena.get_query_results(QueryExecutionId=query_execution_id)
+            #print(result)
 
-    # get data
-    region = {}
-    if len(result['ResultSet']['Rows']) == 2:
-        region['name'] = result['ResultSet']['Rows'][1]['Data'][0]['VarCharValue'] # region's name
-        print("Device found inside a region: " + str(region))
-        
-        iot = boto3.client('iot')
-        describe_thing_response = iot.describe_thing(thingName=device)
-        allowed_regions = describe_thing_response['attributes']['AllowedRegions']
-        print("Allowed regions for device: " + allowed_regions)
-        
-        if region['name'] in allowed_regions:
-            print("Device found inside a valid region")
-            region['inside_a_valid_region'] = True
-        else:
-            print("Device found outside a valid region")
-            region['inside_a_valid_region'] = False
-    else:
-        print("Device not found inside any region")    
-        region['inside_a_valid_region'] = False
-        
-    return region
-```
+            # get data
+            region = {}
+            if len(result['ResultSet']['Rows']) == 2:
+                region['name'] = result['ResultSet']['Rows'][1]['Data'][0]['VarCharValue'] # region's name
+                print("Device found inside a region: " + str(region))
+
+                iot = boto3.client('iot')
+                describe_thing_response = iot.describe_thing(thingName=device)
+                allowed_regions = describe_thing_response['attributes']['AllowedRegions']
+                print("Allowed regions for device: " + allowed_regions)
+
+                if region['name'] in allowed_regions:
+                    print("Device found inside a valid region")
+                    region['inside_a_valid_region'] = True
+                else:
+                    print("Device found outside a valid region")
+                    region['inside_a_valid_region'] = False
+            else:
+                print("Device not found inside any region")    
+                region['inside_a_valid_region'] = False
+
+            return region
 
     7.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
 
@@ -217,10 +213,7 @@ def lambda_handler(event, context):
     8.3. Click on *Create* and enter the following values.
     - Name - *Geofencing*
     - Rule query statement, enter the below query. Make sure to replace the region and account number placeholders with the correct one (you can also copy and paste the ARN of the function created in 7).
-
-```
-SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'
-```
+        SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'
 
     - Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
     - Click on *Configure action* and enter *data/geofencing/processed* as destination topic.
