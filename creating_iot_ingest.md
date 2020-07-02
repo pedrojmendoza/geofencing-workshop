@@ -75,9 +75,9 @@ def lambda_handler(event, context):
     return True
 ```
     
-    4.4. Finally, connect your lambda with the DDB table.
-    - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
-    - Select the geofences table (should start with *Geofence-* and click on *Add*.
+        4.4. Finally, connect your lambda with the DDB table.
+        - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
+        - Select the geofences table (should start with *Geofence-* and click on *Add*.
 
 5. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
@@ -87,7 +87,7 @@ def lambda_handler(event, context):
 
     5.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
 
-```
+```sql
 CREATE external TABLE IF NOT EXISTS regions
  (
  NAME string,
@@ -123,7 +123,7 @@ LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 
     7.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
-```
+```python
 import time
 import boto3
 
