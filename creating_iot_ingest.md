@@ -75,9 +75,9 @@ def lambda_handler(event, context):
     return True
 ```
     
-  4.4. Finally, connect your lambda with the DDB table.
-  - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
-  - Select the geofences table (should start with *Geofence-* and click on *Add*.
+    4.4. Finally, connect your lambda with the DDB table.
+    - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
+    - Select the geofences table (should start with *Geofence-* and click on *Add*.
 
 5. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
@@ -99,7 +99,7 @@ OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 ```
 
-  5.4. Click on *Run query*
+    5.4. Click on *Run query*
 
 6. Similarly to step 3, now lets create a new IAM role for the lambda function that will be performing the spatial querying.
 
@@ -208,7 +208,7 @@ def lambda_handler(event, context):
     return region
 ```
 
-  7.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
+    7.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
 
 8. Finally, create a new rule in IoT Core
 
@@ -224,7 +224,7 @@ def lambda_handler(event, context):
 SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'
 ```
 
-  - Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
-  - Click on *Configure action* and enter *data/geofencing/processed* as destination topic.
-  - Click on *Create Role* and enter *iot-republish* as role name.
-  - Click on *Add action* and finally on *Create rule*
+    - Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
+    - Click on *Configure action* and enter *data/geofencing/processed* as destination topic.
+    - Click on *Create Role* and enter *iot-republish* as role name.
+    - Click on *Add action* and finally on *Create rule*
