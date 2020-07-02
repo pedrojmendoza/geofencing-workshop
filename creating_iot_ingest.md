@@ -36,7 +36,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
-```
+```python
 import boto3
 import json
 
