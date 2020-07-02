@@ -22,11 +22,11 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     3.3. Create a role with the following properties.
 
-        3.3.1. Trusted entity – Lambda.
+      3.3.1. Trusted entity – Lambda.
 
-        3.3.2. Permissions – *AWSLambdaDynamoDBExecutionRole* and *AmazonS3FullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
+      3.3.2. Permissions – *AWSLambdaDynamoDBExecutionRole* and *AmazonS3FullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
 
-        3.3.3. Role name – *lambda-dynamodb-s3-role*.
+      3.3.3. Role name – *lambda-dynamodb-s3-role*.
 
 4. Now, lets create a new Lambda function.
 
