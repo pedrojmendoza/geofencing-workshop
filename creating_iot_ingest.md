@@ -36,48 +36,46 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
-```python
-import boto3
-import json
+    import boto3
+    import json
 
-print('Loading function')
+    print('Loading function')
 
-def lambda_handler(event, context):
-    print("Received event: " + json.dumps(event, indent=2))
+    def lambda_handler(event, context):
+        print("Received event: " + json.dumps(event, indent=2))
 
-    s3 = boto3.resource('s3')
-    regions_s3_object = s3.Object('<REPLACE_WITH_YOUR_BUCKET_NAME>', 'Canada/regions.json')
-    regions = json.loads(regions_s3_object.get()['Body'].read().decode('utf-8'))
+        s3 = boto3.resource('s3')
+        regions_s3_object = s3.Object('<REPLACE_WITH_YOUR_BUCKET_NAME>', 'Canada/regions.json')
+        regions = json.loads(regions_s3_object.get()['Body'].read().decode('utf-8'))
 
-    for record in event['Records']:
-        if 'NewImage' in record['dynamodb']:
-            new_name = record['dynamodb']['NewImage']['name']['S']
-            new_geometry = json.loads(record['dynamodb']['NewImage']['geometry']['S'])
-    
-            lons_lats = []
-            for lat_lon in new_geometry:
-                lon_lat = []
-                lon_lat.append(lat_lon[1])
-                lon_lat.append(lat_lon[0])
-                lons_lats.append(lon_lat)
-    
-            new_rings = []
-            new_rings.append(lons_lats)
-    
-            new_feature = {}
-            new_feature['attributes'] = {'NAME': new_name}
-            new_feature['geometry'] = {'rings': new_rings}
-            regions['features'].append(new_feature)
+        for record in event['Records']:
+            if 'NewImage' in record['dynamodb']:
+                new_name = record['dynamodb']['NewImage']['name']['S']
+                new_geometry = json.loads(record['dynamodb']['NewImage']['geometry']['S'])
 
-    #print("extended regions: " + json.dumps(existing_regions, indent=2))
-    regions_s3_object.put(Body=(bytes(json.dumps(regions).encode('UTF-8'))))
+                lons_lats = []
+                for lat_lon in new_geometry:
+                    lon_lat = []
+                    lon_lat.append(lat_lon[1])
+                    lon_lat.append(lat_lon[0])
+                    lons_lats.append(lon_lat)
 
-    return True
-```
-    
-        4.4. Finally, connect your lambda with the DDB table.
-        - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
-        - Select the geofences table (should start with *Geofence-* and click on *Add*.
+                new_rings = []
+                new_rings.append(lons_lats)
+
+                new_feature = {}
+                new_feature['attributes'] = {'NAME': new_name}
+                new_feature['geometry'] = {'rings': new_rings}
+                regions['features'].append(new_feature)
+
+        #print("extended regions: " + json.dumps(existing_regions, indent=2))
+        regions_s3_object.put(Body=(bytes(json.dumps(regions).encode('UTF-8'))))
+
+        return True
+
+    4.4. Finally, connect your lambda with the DDB table.
+    - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
+    - Select the geofences table (should start with *Geofence-* and click on *Add*.
 
 5. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
