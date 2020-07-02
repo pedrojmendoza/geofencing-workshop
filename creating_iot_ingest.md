@@ -6,41 +6,41 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
 2. We will need a baseline JSON file to store the geofences geometries. Initially it will only contain some metadata and will be incrementally extended as the new geofences are added using the webapp. 
 
-    2.1. Open the [S3 console](https://s3.console.aws.amazon.com/s3). 
+  2.1. Open the [S3 console](https://s3.console.aws.amazon.com/s3). 
 
-    2.2. Click on your bucket name (the one you just created) to open it.
+  2.2. Click on your bucket name (the one you just created) to open it.
 
-    2.3. Click on *Create Folder*, name it *Canada* and click *Save*
+  2.3. Click on *Create Folder*, name it *Canada* and click *Save*
 
-    2.4. The baseline file is part of this repository and is named *regions.json*, upload it to your S3 bucket (inside the *Cananda* folder) by dragging and dropping it.
+  2.4. The baseline file is part of this repository and is named *regions.json*, upload it to your S3 bucket (inside the *Cananda* folder) by dragging and dropping it.
 
 3. Next, create a new IAM role for the lambda function that will be performing the data propagation.
 
-    3.1. Open the [roles page](https://console.aws.amazon.com/iam/home?#/roles) in the IAM console.
+  3.1. Open the [roles page](https://console.aws.amazon.com/iam/home?#/roles) in the IAM console.
 
-    3.2. Choose Create role.
+  3.2. Choose Create role.
 
-    3.3. Create a role with the following properties.
+  3.3. Create a role with the following properties.
 
-      3.3.1. Trusted entity – Lambda.
+    - Trusted entity – Lambda.
 
-      3.3.2. Permissions – *AWSLambdaDynamoDBExecutionRole* and *AmazonS3FullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
+    - Permissions – *AWSLambdaDynamoDBExecutionRole* and *AmazonS3FullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
 
-      3.3.3. Role name – *lambda-dynamodb-s3-role*.
+    - Role name – *lambda-dynamodb-s3-role*.
 
 4. Now, lets create a new Lambda function.
 
-    4.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
+  4.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
 
-    4.2. Choose Create function and use the following parameters.
+  4.2. Choose Create function and use the following parameters.
 
-        4.2.1 Enter *DdbToS3ForSpatialQuerying* as function name.
+    - Enter *DdbToS3ForSpatialQuerying* as function name.
 
-        4.2.3. Select *Python 3.8* as Runtime. 
+    - Select *Python 3.8* as Runtime. 
 
-        4.2.4. Select *Use an existing role*, pick the *lambda-dynamodb-s3-role* from the dropdown and click on *Create function*
+    - Select *Use an existing role*, pick the *lambda-dynamodb-s3-role* from the dropdown and click on *Create function*
 
-    4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
+  4.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
 ```
 import boto3
@@ -82,19 +82,19 @@ def lambda_handler(event, context):
     return True
 ```
 
-    4.4. Finally, connect your lambda with the DDB table.
+  4.4. Finally, connect your lambda with the DDB table.
 
-        4.4.1. Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
+  - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
 
-        4.4.2. Select the geofences table (should start with *Geofence-* and click on *Add*.
+  - Select the geofences table (should start with *Geofence-* and click on *Add*.
 
 5. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
-    5.1. Go to the [Athena console](https://console.aws.amazon.com/athena/)
+  5.1. Go to the [Athena console](https://console.aws.amazon.com/athena/)
 
-    5.2. In order for Athena to be able to properly operate, you need to provide a location for query results. Click on *set up a query result location in Amazon S3* and enter the S3 URI of your bucket like the following *s3://<REPLACE_WITH_YOUR_BUCKET_NAME>/*
+  5.2. In order for Athena to be able to properly operate, you need to provide a location for query results. Click on *set up a query result location in Amazon S3* and enter the S3 URI of your bucket like the following *s3://<REPLACE_WITH_YOUR_BUCKET_NAME>/*
 
-    5.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
+  5.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
 
 CREATE external TABLE IF NOT EXISTS regions
  (
@@ -106,35 +106,35 @@ STORED AS INPUTFORMAT 'com.esri.json.hadoop.EnclosedJsonInputFormat'
 OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 
-    5.4. Click on *Run query*
+  5.4. Click on *Run query*
 
 6. Similarly to step 3, now lets create a new IAM role for the lambda function that will be performing the spatial querying.
 
-    6.1. Open the [roles page](https://console.aws.amazon.com/iam/home?#/roles) in the IAM console.
+  6.1. Open the [roles page](https://console.aws.amazon.com/iam/home?#/roles) in the IAM console.
 
-    6.2. Choose Create role.
+  6.2. Choose Create role.
 
-    6.3. Create a role with the following properties.
+  6.3. Create a role with the following properties.
 
-        6.3.1. Trusted entity – Lambda.
+  - Trusted entity – Lambda.
 
-        6.3.2. Permissions – *AmazonS3FullAccess*, *AmazonAthenaFullAccess*, *AWSIoTConfigReadOnlyAccess* and *AWSGlueConsoleFullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
+  - Permissions – *AmazonS3FullAccess*, *AmazonAthenaFullAccess*, *AWSIoTConfigReadOnlyAccess* and *AWSGlueConsoleFullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
 
-        6.3.3. Role name – *lambda-spatial-query-role*.
+  - Role name – *lambda-spatial-query-role*.
 
 7. We are almost done, next step is create a new lambda function for querying the geofences using as input the coordinates of a device.
 
-    7.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
+  7.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
 
-    7.2. Choose Create function and use the following parameters.
+  7.2. Choose Create function and use the following parameters.
 
-        7.2.1 Enter *SpatialQuery* as function name.
+  - Enter *SpatialQuery* as function name.
 
-        7.2.3. Select *Python 3.8* as Runtime. 
+   - Select *Python 3.8* as Runtime. 
 
-        7.2.4. Select *Use an existing role*, pick the *lambda-spatial-query-role* from the dropdown and click on *Create function*
+   - Select *Use an existing role*, pick the *lambda-spatial-query-role* from the dropdown and click on *Create function*
 
-    7.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
+  7.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
 ```
 import time
@@ -221,29 +221,29 @@ def lambda_handler(event, context):
     return region
 ```
 
-    7.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
+  7.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
 
 8. Finally, create a new rule in IoT Core
 
-    8.1. Open the [IoT console](https://console.aws.amazon.com/iot/)
+  8.1. Open the [IoT console](https://console.aws.amazon.com/iot/)
 
-    8.2. Click on *Act* and then on *Rules*
+  8.2. Click on *Act* and then on *Rules*
 
-    8.3. Click on *Create* and enter the following values.
+  8.3. Click on *Create* and enter the following values.
 
-        8.3.1. Name - *Geofencing*
+  - Name - *Geofencing*
 
-        8.3.2. Rule query statement, enter the below query. Make sure to replace the region and account number placeholders with the correct one (you can also copy and paste the ARN of the function created in 7).
+  - Rule query statement, enter the below query. Make sure to replace the region and account number placeholders with the correct one (you can also copy and paste the ARN of the function created in 7).
 
 ```
 SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'
 ```
 
-        8.3.3. Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
+  - Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
 
-        8.3.4. Click on *Configure action* and enter *data/geofencing/processed* as destination topic.
+  - Click on *Configure action* and enter *data/geofencing/processed* as destination topic.
+  
+  - Click on *Create Role* and enter *iot-republish* as role name.
 
-        8.3.5. Click on *Create Role* and enter *iot-republish* as role name.
-
-        8.3.6. Click on *Add action* and finally on *Create rule*
+  - Click on *Add action* and finally on *Create rule*
 
