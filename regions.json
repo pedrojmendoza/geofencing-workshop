@@ -1,0 +1,20 @@
+{
+  "displayFieldName": "",
+  "fieldAliases": {
+    "NAME": "NAME"
+  },
+  "geometryType": "esriGeometryPolygon",
+  "spatialReference": {
+    "wkid": null
+  },
+  "fields": [
+    {
+      "name": "NAME",
+      "type": "esriFieldTypeString",
+      "alias": "NAME",
+      "length": 90
+    }
+  ],
+  "features": [
+  ]
+}
