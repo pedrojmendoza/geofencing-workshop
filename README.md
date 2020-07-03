@@ -14,6 +14,7 @@ Now that you have been introduced to the solution and its architecture, lets mov
 
 1. [Creating the geofences editor webapp](creating_webapp.md)
 2. [Setting up the device and its identity](setting_device.md)
-3. [Creating the IoT data ingestion path and finding out the device position compared to its geofence](creating_iot_ingest.md)
-4. [Visualizing the results](visualizing.md)
-5. [Alarming (if required)](alarming.md)
+3. [Simulating the device](simulating_device.md)
+4. [Creating the IoT data ingestion path and finding out the device position compared to its geofence](creating_iot_ingest.md)
+5. [Visualizing the results](visualizing.md)
+6. [Alarming (if required)](alarming.md)
