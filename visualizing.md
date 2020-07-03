@@ -31,4 +31,8 @@ Once we have the data flowing into IoT Core and the spatial query components in 
     2.4. Click on *Add schedule* next to the *Schedule* section and enter the following values.  
     - Select *Every 5 minutes* from the dropdown and click
     - Click on *Save*
+    
+3. Finally, lets configure the visualization using QuickSight ...
+
+<TODO>
 
