@@ -1,4 +1,4 @@
-The geo-fencing creation application is based on [AWS Amplify](https://aws.amazon.com/amplify/) and specifically on React.
+The geo-fencing management web application is based on [AWS Amplify](https://aws.amazon.com/amplify/) and specifically on React.
 
 To avoid facing issues with the local depedency management, we recommend you to create a new [Cloud9](https://aws.amazon.com/cloud9/) environment as IDE. We used a t2.micro instance running Amazon Linux.
 
@@ -184,3 +184,5 @@ You find face issues if you try to access http://localhost:8080 on Cloud9 (devel
 
 4. Once you are done with the above customizations, you are ready to [Add authentication](https://docs.amplify.aws/start/getting-started/auth/q/integration/react) and finally [Deploy and host app
 ](https://docs.amplify.aws/start/getting-started/hosting/q/integration/react).
+
+5. After you are done with deploying the web app, go to the URL for the published application, create a new user to be able to access the application. Once in the application, draw a new geofence covering the Ottawa area (close to what is shown in this [picture](TBD)) and save it with the name *Ottawa*
