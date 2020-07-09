@@ -6,7 +6,6 @@ On your Cloud9 env, open a Terminal window and follow the steps below:
 
 2. Create a new file, paste the content below on it and save it as *spatialPub.py*
 
-        ```
         from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
         import logging
         import time
@@ -77,7 +76,6 @@ On your Cloud9 env, open a Terminal window and follow the steps below:
             print('Published topic %s: %s\n' % (topic, messageJson))
             loopCount += 1
             time.sleep(5)
-        ```
         
 3. Copy the certificate and private key for the device to the same folder in your Cloud9 env where you have created the above file. Make sure you rename the file names to be *GeofencedDevice1.cert.pem* and *GeofencedDevice1.private.key*       
 
