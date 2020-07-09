@@ -6,9 +6,9 @@ The next step in the workshop is to provision a new device in AWS IoT Core.
 $ aws iot create-thing-type --thing-type-name "GeofencedDevice" --thing-type-properties "searchableAttributes=AllowedRegions"
 ```
 
-2. Next, you should create a new thing to represent your device. Please follow the instructions available in the [Create a thing](https://docs.aws.amazon.com/iot/latest/developerguide/create-aws-thing.html) page. Lets name our thing *GeofencedDevice1*.
+2. Next, you should create a new thing to represent your device. Please follow the instructions available in the [Create a thing](https://docs.aws.amazon.com/iot/latest/developerguide/create-aws-thing.html) page. Lets name our thing *GeofencedDevice1* and make sure to select *GeofencedDevice* as the thing type for the new thing. Also set the value for the *AllowedRegions* thing attribute to be *Ottawa* (that should match the geofence's name you created before).
 
-3. Once we have the device in place, we should create a new set of credentials that will correspond to the identity or our device. Please refer to the [Create and activate a device certificate](https://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html) page for detailed instructions. Make sure you download the credential's files.
+3. Once we have the device in place, we should create a new set of credentials that will correspond to the identity or our device. Please refer to the [Create and activate a device certificate](https://docs.aws.amazon.com/iot/latest/developerguide/create-device-certificate.html) page for detailed instructions. Make sure you download the credential's files and save it on a secure location.
 
 4. Once we have the certificate created, we can move and create a new policy to define the actions allowed for the device. You can follow the instructions at [Create an AWS IoT Core policy](https://docs.aws.amazon.com/iot/latest/developerguide/create-iot-policy.html). When creating the statement for the Publish action, lets use the *data/geofencing/GeofencedDevice1/geolocation* topic name.
 
