@@ -21,7 +21,7 @@ The next step in the workshop is to provision a new device in AWS IoT Core.
 
     2.3. Click on *Create*, then on *Create a single thing* and enter the following values.
     - Name - *GeofencedDevice1*
-    - Thing Type - *GeofencedDevice* as the thing type for the new thing. 
+    - Thing Type - Select *GeofencedDevice* as the thing type for the new thing. 
     - Set the value for the *AllowedRegions* thing's attribute to be *Ottawa* (that should match the geofence's name you created before).
     
     2.4. Click on *Create certificate* and make sure to download and save the certicate and private key files on a secure location.
