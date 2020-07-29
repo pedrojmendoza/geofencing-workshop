@@ -42,36 +42,36 @@ Lets first propagate the geofences geometries from the DDB table where our webap
         print('Loading function')
 
         def lambda_handler(event, context):
-            print("Received event: " + json.dumps(event, indent=2))
+          print("Received event: " + json.dumps(event, indent=2))
 
-            s3 = boto3.resource('s3')
-            regions_s3_object = s3.Object('<REPLACE_WITH_YOUR_BUCKET_NAME>', 'Canada/regions.json')
-            regions = json.loads(regions_s3_object.get()['Body'].read().decode('utf-8'))
+          s3 = boto3.resource('s3')
+          regions_s3_object = s3.Object('<REPLACE_WITH_YOUR_BUCKET_NAME>', 'Canada/regions.json')
+          regions = json.loads(regions_s3_object.get()['Body'].read().decode('utf-8'))
 
-            for record in event['Records']:
-                if 'NewImage' in record['dynamodb']:
-                    new_name = record['dynamodb']['NewImage']['name']['S']
-                    new_geometry = json.loads(record['dynamodb']['NewImage']['geometry']['S'])
+          for record in event['Records']:
+            if 'NewImage' in record['dynamodb']:
+              new_name = record['dynamodb']['NewImage']['name']['S']
+              new_geometry = json.loads(record['dynamodb']['NewImage']['geometry']['S'])
 
-                    lons_lats = []
-                    for lat_lon in new_geometry:
-                        lon_lat = []
-                        lon_lat.append(lat_lon[1])
-                        lon_lat.append(lat_lon[0])
-                        lons_lats.append(lon_lat)
+              lons_lats = []
+              for lat_lon in new_geometry:
+                lon_lat = []
+                lon_lat.append(lat_lon[1])
+                lon_lat.append(lat_lon[0])
+                lons_lats.append(lon_lat)
 
-                    new_rings = []
-                    new_rings.append(lons_lats)
+              new_rings = []
+              new_rings.append(lons_lats)
 
-                    new_feature = {}
-                    new_feature['attributes'] = {'NAME': new_name}
-                    new_feature['geometry'] = {'rings': new_rings}
-                    regions['features'].append(new_feature)
+              new_feature = {}
+              new_feature['attributes'] = {'NAME': new_name}
+              new_feature['geometry'] = {'rings': new_rings}
+              regions['features'].append(new_feature)
 
-            #print("extended regions: " + json.dumps(existing_regions, indent=2))
-            regions_s3_object.put(Body=(bytes(json.dumps(regions).encode('UTF-8'))))
+          #print("extended regions: " + json.dumps(existing_regions, indent=2))
+          regions_s3_object.put(Body=(bytes(json.dumps(regions).encode('UTF-8'))))
 
-            return True
+          return True
 
     4.4. Finally, connect your lambda with the DDB table.
     - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
