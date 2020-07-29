@@ -93,15 +93,15 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     6.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
 
-        CREATE external TABLE IF NOT EXISTS regions
-         (
+       CREATE external TABLE IF NOT EXISTS regions
+       (
          NAME string,
          BoundaryShape binary
-         )
-        ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
-        STORED AS INPUTFORMAT 'com.esri.json.hadoop.EnclosedJsonInputFormat'
-        OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-        LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
+       )
+       ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
+       STORED AS INPUTFORMAT 'com.esri.json.hadoop.EnclosedJsonInputFormat'
+       OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+       LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 
     6.4. Click on *Run query*
 
