@@ -2,7 +2,7 @@ Now we are ready to simulate a real device. We will use the same [Cloud9](https:
 
 On your Cloud9 env, open a Terminal window and follow the steps below:
 
-1. Install AWS IoT SDK for Python -> `sudo pip install AWSIoTPythonSDK`
+1. Install AWS IoT SDK for Python by running `sudo pip install AWSIoTPythonSDK`
 
 2. Create a new file, paste the content below on it and save it as *spatialPub.py*
 
