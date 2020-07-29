@@ -82,3 +82,5 @@ On your Cloud9 env, open a new Terminal window and follow the steps below:
 4. Download the root CA for the AWS IoT Core's certificate by running `curl https://www.amazontrust.com/repository/AmazonRootCA1.pem > root-CA.crt`
 
 5. Start the device simulation (make sure you replace the placeholder with the correct endpoint from your AWS IoT Core, including region) by running `python spatialPub.py -e <YOUR-AWS-IOT-CORE-ENDPOINT> -r root-CA.crt -c GeofencedDevice1.cert.pem -k GeofencedDevice1.private.key`
+
+    You can obtain your AWS IoT endpoint by running `aws iot describe-endpoint --endpoint-type iot:Data-ATS`
