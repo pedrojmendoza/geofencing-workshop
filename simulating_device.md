@@ -77,7 +77,7 @@ On your Cloud9 env, open a new Terminal window and follow the steps below:
             loopCount += 1
             time.sleep(5)
         
-3. Copy the certificate and private key for the device to the same folder in your Cloud9 env where you have created the above file. Make sure you rename the file names to be *GeofencedDevice1.cert.pem* and *GeofencedDevice1.private.key*       
+3. Copy the certificate and private key for the device to the same folder in your Cloud9 env where you have created the above file. Make sure you rename the file names to be *GeofencedDevice1.cert.pem* (for the certificate) and *GeofencedDevice1.private.key* (for the private key).
 
 4. Download the root CA for the AWS IoT Core's certificate by running `curl https://www.amazontrust.com/repository/AmazonRootCA1.pem > root-CA.crt`
 
