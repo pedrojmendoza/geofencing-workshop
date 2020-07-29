@@ -211,6 +211,8 @@ Lets first propagate the geofences geometries from the DDB table where our webap
          return region
 
     8.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
+    
+    8.5. Next, lets grant permissions to IoT service to invoke our lambda function by running the `aws lambda add-permission --function-name SpatialQuery --action lambda:InvokeFunction --statement-id iot --principal iot.amazonaws.com --output text` command.
 
 9. Finally, create a new rule in IoT Core
 
