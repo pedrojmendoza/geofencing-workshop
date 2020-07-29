@@ -6,7 +6,7 @@ In order to create it, please follow the instructions detailed in the [Amplify R
 
 1. As part of the [Prerequisites](https://docs.amplify.aws/start/getting-started/installation/q/integration/react) you will be initializing Amplify and that will create a new AWS profile on your Cloud9 environment and these credentials will be used.
 
-2. Once initialize, feel free to [Set up fullstack project](https://docs.amplify.aws/start/getting-started/setup/q/integration/react) using the provided instructions.
+2. Once you are done with the Prerequisites step, feel free to [Set up fullstack project](https://docs.amplify.aws/start/getting-started/setup/q/integration/react) using the provided instructions.
 
 3. When [Connecting the API and database to the app](https://docs.amplify.aws/start/getting-started/data-model/q/integration/react), you will be asked about the expiration of your API key, you might want to use a value larger than 7 days for its expiration (we used 1 year expiration instead). 
 
