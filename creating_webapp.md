@@ -185,4 +185,4 @@ You find face issues if you try to access http://localhost:8080 on Cloud9 (devel
 4. Once you are done with the above customizations, you are ready to [Add authentication](https://docs.amplify.aws/start/getting-started/auth/q/integration/react) and finally [Deploy and host app
 ](https://docs.amplify.aws/start/getting-started/hosting/q/integration/react).
 
-5. After you are done with deploying the web app, go to the URL for the published application, create a new user to be able to access the application and, once in the application, draw a new geofence covering the Ottawa area (close to what is shown in this [picture](./Ottawa.png)) and save it with the name *Ottawa*
+5. Make sure to write down the URL produced by the *amplify publish* command as you will need it to access the web app.
