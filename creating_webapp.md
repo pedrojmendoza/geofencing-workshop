@@ -145,7 +145,7 @@ const App = () => {
 export default App
 ```
 
-Additionally, you should modify the **public/index.html** file and add the following section to import the styles required by Leaflet.
+Additionally, you should modify the **public/index.html** file and add the following section to import the styles required by Leaflet. You should paste these just below the other *<link>* elements in the file.
 
 ```
     <link
