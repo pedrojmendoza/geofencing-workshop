@@ -1,10 +1,17 @@
 The next step in the workshop is to provision a new device in AWS IoT Core.
 
-1. First of all, lets create a new Thing Type to represent out devices. You can refer to [Thing types](https://docs.aws.amazon.com/iot/latest/developerguide/thing-types.html) for details on how to do it. In our case, we will define a Thing Type names *GeofencedDevice* and will define a single attribute named *AllowedRegions* within it to allow us to define where a given device is expected to be located. You can perform this action by running the following command in the CLI:
+1. First of all, lets create a new Thing Type to represent out devices. 
 
-```
-aws iot create-thing-type --thing-type-name "GeofencedDevice" --thing-type-properties "searchableAttributes=AllowedRegions"
-```
+    1.1. Open the [IoT console](https://console.aws.amazon.com/iot/)
+
+    1.2. Click on *Manage* and then on *Types*
+
+    1.3. Click on *Create* and enter the following values.
+    - Name - *GeofencedDevice*
+    
+    1.4. Click on *Add another* under *Set searchable thing attributes* and enter *AllowedRegions* as attribute key. 
+
+    1.5. Click on *Create thing type*
 
 2. Next, you should create a new thing to represent your device. 
 
@@ -31,7 +38,8 @@ aws iot create-thing-type --thing-type-name "GeofencedDevice" --thing-type-prope
 
     3.3. Click on *Create* and enter the following values.
     - Name - *GeofencedDevice1-Policy*
-    - Switch to *Advanced mode* and replace the policy document with the below definition (please adjust it to your AWS account number and selected region)
+    
+    3.4. Switch to *Advanced mode* and replace the policy document with the below definition (please adjust it to your AWS account number and selected region)
     
         {
           "Version": "2012-10-17",
@@ -58,7 +66,7 @@ aws iot create-thing-type --thing-type-name "GeofencedDevice" --thing-type-prope
           ]
         }   
         
-    3.4. Click on *Create* to finish with policy creation.        
+    3.5. Click on *Create* to finish with policy creation.        
 
 4. Finally, lets associate the policy with the certificate associated with the device.
 
