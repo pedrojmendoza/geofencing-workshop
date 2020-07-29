@@ -125,7 +125,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
     - Select *Python 3.8* as Runtime. 
     - Select *Use an existing role*, pick the *lambda-spatial-query-role* from the dropdown and click on *Create function*
 
-    8.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save* (make sure you remove any leading space on the pasted code).
+    8.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save*.
 
        import time
        import boto3
