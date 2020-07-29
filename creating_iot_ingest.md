@@ -114,7 +114,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
     7.3. Create a role with the following properties.
     - Trusted entity – Lambda.
     - Permissions – *AmazonS3FullAccess*, *AmazonAthenaFullAccess*, *AWSIoTConfigReadOnlyAccess* and *AWSGlueConsoleFullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
-    - Role name – *lambda-spatial-query-role*.
+    - Role name – *lambda-spatial-query-role*
 
 8. We are almost done, next step is create a new lambda function for querying the geofences using as input the coordinates of a device.
 
