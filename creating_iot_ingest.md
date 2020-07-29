@@ -29,7 +29,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     4.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
 
-    4.2. Choose Create function and use the following parameters.
+    4.2. Choose *Create function* and use the following parameters.
     - Enter *DdbToS3ForSpatialQuerying* as function name.
     - Select *Python 3.8* as Runtime. 
     - Select *Use an existing role*, pick the *lambda-dynamodb-s3-role* from the dropdown and click on *Create function*
