@@ -28,7 +28,7 @@ Next, install the dependecies require to include [Leaflet](https://leafletjs.com
 npm install react-leaflet-draw react-leaflet leaflet-draw leaflet
 ```
 
-When modifying the React front-end, instead of the instructions on the tutorial, modify the **src/App.js** file as follows:
+When working on the *Connect frontend to API* sectiono, instead of the instructions on the tutorial, modify the **src/App.js** file and replace its contents with the below code:
 
 ```
 /* src/App.js */
