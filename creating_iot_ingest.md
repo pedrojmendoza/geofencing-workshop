@@ -127,88 +127,88 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     8.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save* (make sure you remove any leading space on the pasted code).
 
-        import time
-        import boto3
+       import time
+       import boto3
 
-        # number of retries
-        RETRY_COUNT = 10
+       # number of retries
+       RETRY_COUNT = 10
 
-        def lambda_handler(event, context):
-            print(event)
+       def lambda_handler(event, context):
+         print(event)
 
-            # get input
-            device = event['device']
-            lon = event['lon'] #lon = -75.49
-            lat = event['lat'] #lat = 45.4
+         # get input
+         device = event['device']
+         lon = event['lon'] #lon = -75.49
+         lat = event['lat'] #lat = 45.4
 
-            # created query
-            query = "SELECT regions.name FROM default.regions WHERE ST_CONTAINS (regions.boundaryshape, ST_POINT(%s, %s))" % (lon, lat)
+         # created query
+         query = "SELECT regions.name FROM default.regions WHERE ST_CONTAINS (regions.boundaryshape, ST_POINT(%s, %s))" % (lon, lat)
 
-            # athena client
-            athena = boto3.client('athena')
+         # athena client
+         athena = boto3.client('athena')
 
-            # Execution
-            response = athena.start_query_execution(
-                QueryString=query,
-                QueryExecutionContext={
-                    'Database': "default"
-                },
-                ResultConfiguration={
-                    'OutputLocation': 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>',
-                }
-            )
+         # Execution
+         response = athena.start_query_execution(
+           QueryString=query,
+           QueryExecutionContext={
+             'Database': "default"
+           },
+           ResultConfiguration={
+             'OutputLocation': 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>',
+           }
+         )
 
-            # get query execution id
-            query_execution_id = response['QueryExecutionId']
-            #print(query_execution_id)
+         # get query execution id
+         query_execution_id = response['QueryExecutionId']
+         #print(query_execution_id)
 
-            # get execution status
-            for i in range(1, 1 + RETRY_COUNT):
+         # get execution status
+         for i in range(1, 1 + RETRY_COUNT):
+           # get query execution
+           query_status = athena.get_query_execution(QueryExecutionId=query_execution_id)
+           query_execution_status = query_status['QueryExecution']['Status']['State']
 
-                # get query execution
-                query_status = athena.get_query_execution(QueryExecutionId=query_execution_id)
-                query_execution_status = query_status['QueryExecution']['Status']['State']
+           if query_execution_status == 'SUCCEEDED':
+             #print("STATUS:" + query_execution_status)
+             break
 
-                if query_execution_status == 'SUCCEEDED':
-                    #print("STATUS:" + query_execution_status)
-                    break
+           if query_execution_status == 'FAILED':
+             raise Exception("STATUS:" + query_execution_status)
 
-                if query_execution_status == 'FAILED':
-                    raise Exception("STATUS:" + query_execution_status)
+           else:
+             #print("STATUS:" + query_execution_status)
+             time.sleep(0.2)
+          
+         else:
+           athena.stop_query_execution(QueryExecutionId=query_execution_id)
+           raise Exception('TIME OVER')
 
-                else:
-                    #print("STATUS:" + query_execution_status)
-                    time.sleep(0.2)
-            else:
-                athena.stop_query_execution(QueryExecutionId=query_execution_id)
-                raise Exception('TIME OVER')
+         # get query results
+         result = athena.get_query_results(QueryExecutionId=query_execution_id)
+         #print(result)
 
-            # get query results
-            result = athena.get_query_results(QueryExecutionId=query_execution_id)
-            #print(result)
+         # get data
+         region = {}
+         if len(result['ResultSet']['Rows']) == 2:
+           region['name'] = result['ResultSet']['Rows'][1]['Data'][0]['VarCharValue'] # region's name
+           print("Device found inside a region: " + str(region))
+           
+           iot = boto3.client('iot')
+           describe_thing_response = iot.describe_thing(thingName=device)
+           allowed_regions = describe_thing_response['attributes']['AllowedRegions']
+           print("Allowed regions for device: " + allowed_regions)
 
-            # get data
-            region = {}
-            if len(result['ResultSet']['Rows']) == 2:
-                region['name'] = result['ResultSet']['Rows'][1]['Data'][0]['VarCharValue'] # region's name
-                print("Device found inside a region: " + str(region))
+           if region['name'] in allowed_regions:
+             print("Device found inside a valid region")
+             region['inside_a_valid_region'] = True
+           else:
+             print("Device found outside a valid region")
+             region['inside_a_valid_region'] = False
+         else:
+           print("Device not found inside any region")    
+           region['inside_a_valid_region'] = False
 
-                iot = boto3.client('iot')
-                describe_thing_response = iot.describe_thing(thingName=device)
-                allowed_regions = describe_thing_response['attributes']['AllowedRegions']
-                print("Allowed regions for device: " + allowed_regions)
-
-                if region['name'] in allowed_regions:
-                    print("Device found inside a valid region")
-                    region['inside_a_valid_region'] = True
-                else:
-                    print("Device found outside a valid region")
-                    region['inside_a_valid_region'] = False
-            else:
-                print("Device not found inside any region")    
-                region['inside_a_valid_region'] = False
-
-            return region
+         return region
 
     8.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
 
