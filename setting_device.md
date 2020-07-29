@@ -3,7 +3,7 @@ The next step in the workshop is to provision a new device in AWS IoT Core.
 1. First of all, lets create a new Thing Type to represent out devices. You can refer to [Thing types](https://docs.aws.amazon.com/iot/latest/developerguide/thing-types.html) for details on how to do it. In our case, we will define a Thing Type names *GeofencedDevice* and will define a single attribute named *AllowedRegions* within it to allow us to define where a given device is expected to be located. You can perform this action by running the following command in the CLI:
 
 ```
-$ aws iot create-thing-type --thing-type-name "GeofencedDevice" --thing-type-properties "searchableAttributes=AllowedRegions"
+aws iot create-thing-type --thing-type-name "GeofencedDevice" --thing-type-properties "searchableAttributes=AllowedRegions"
 ```
 
 2. Next, you should create a new thing to represent your device. Please follow the instructions available in the [Create a thing](https://docs.aws.amazon.com/iot/latest/developerguide/create-aws-thing.html) page. Lets name our thing *GeofencedDevice1* and make sure to select *GeofencedDevice* as the thing type for the new thing. Also set the value for the *AllowedRegions* thing attribute to be *Ottawa* (that should match the geofence's name you created before).
