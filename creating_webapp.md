@@ -180,7 +180,7 @@ And replace the contents of the **src/App.css** file with the following:
 }
 ```
 
-You find face issues if you try to access http://localhost:8080 on Cloud9 (development server) so move on to the *Add authentication* and then to *Deploy and host* section to directly see it working on a publicly accesible endpoint.
+You find face issues if you try to access http://localhost:8080 on Cloud9 (development server) so move on to the *Add authentication* section and then to *Deploy and host* section to directly see it working on a publicly accesible endpoint.
 
 4. Once you are done with the above customizations, you are ready to [Add authentication](https://docs.amplify.aws/start/getting-started/auth/q/integration/react) and finally [Deploy and host app
 ](https://docs.amplify.aws/start/getting-started/hosting/q/integration/react).
