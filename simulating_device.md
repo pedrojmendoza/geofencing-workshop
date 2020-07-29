@@ -4,78 +4,78 @@ On your Cloud9 env, open a new Terminal window and follow the steps below:
 
 1. Install AWS IoT SDK for Python by running `sudo pip install AWSIoTPythonSDK`
 
-2. Create a new file, paste the content below on it and save it as *spatialPub.py* (make sure to remove any leading space on the code being pasted)
+2. Create a new file, paste the content below on it and save it as *spatialPub.py*
 
-        from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
-        import logging
-        import time
-        import argparse
-        import json
-        import random
+       from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+       import logging
+       import time
+       import argparse
+       import json
+       import random
 
-        # Read in command-line parameters
-        parser = argparse.ArgumentParser()
-        parser.add_argument("-e", "--endpoint", action="store", required=True, dest="host", help="Your AWS IoT custom endpoint")
-        parser.add_argument("-r", "--rootCA", action="store", required=True, dest="rootCAPath", help="Root CA file path")
-        parser.add_argument("-c", "--cert", action="store", dest="certificatePath", help="Certificate file path")
-        parser.add_argument("-k", "--key", action="store", dest="privateKeyPath", help="Private key file path")
-        parser.add_argument("-id", "--clientId", action="store", dest="clientId", default="GeofencedDevice1", help="Targeted client id")
-        parser.add_argument("-t", "--topic", action="store", dest="topic", default="data/geofencing/GeofencedDevice1/geolocation", help="Targeted topic")
+       # Read in command-line parameters
+       parser = argparse.ArgumentParser()
+       parser.add_argument("-e", "--endpoint", action="store", required=True, dest="host", help="Your AWS IoT custom endpoint")
+       parser.add_argument("-r", "--rootCA", action="store", required=True, dest="rootCAPath", help="Root CA file path")
+       parser.add_argument("-c", "--cert", action="store", dest="certificatePath", help="Certificate file path")
+       parser.add_argument("-k", "--key", action="store", dest="privateKeyPath", help="Private key file path")
+       parser.add_argument("-id", "--clientId", action="store", dest="clientId", default="GeofencedDevice1", help="Targeted client id")
+       parser.add_argument("-t", "--topic", action="store", dest="topic", default="data/geofencing/GeofencedDevice1/geolocation", help="Targeted topic")
 
-        args = parser.parse_args()
-        host = args.host
-        rootCAPath = args.rootCAPath
-        certificatePath = args.certificatePath
-        privateKeyPath = args.privateKeyPath
-        clientId = args.clientId
-        topic = args.topic
+       args = parser.parse_args()
+       host = args.host
+       rootCAPath = args.rootCAPath
+       certificatePath = args.certificatePath
+       privateKeyPath = args.privateKeyPath
+       clientId = args.clientId
+       topic = args.topic
 
-        if not args.certificatePath or not args.privateKeyPath:
-            parser.error("Missing credentials for authentication.")
-            exit(2)
+       if not args.certificatePath or not args.privateKeyPath:
+         parser.error("Missing credentials for authentication.")
+         exit(2)
 
-        # Port defaults
-        port = 8883
+       # Port defaults
+       port = 8883
 
-        # Configure logging
-        logger = logging.getLogger("AWSIoTPythonSDK.core")
-        logger.setLevel(logging.DEBUG)
-        streamHandler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        streamHandler.setFormatter(formatter)
-        logger.addHandler(streamHandler)
+       # Configure logging
+       logger = logging.getLogger("AWSIoTPythonSDK.core")
+       logger.setLevel(logging.DEBUG)
+       streamHandler = logging.StreamHandler()
+       formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+       streamHandler.setFormatter(formatter)
+       logger.addHandler(streamHandler)
 
-        # Init AWSIoTMQTTClient
-        myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
-        myAWSIoTMQTTClient.configureEndpoint(host, port)
-        myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
+       # Init AWSIoTMQTTClient
+       myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
+       myAWSIoTMQTTClient.configureEndpoint(host, port)
+       myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
 
-        # AWSIoTMQTTClient connection configuration
-        myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)
-        myAWSIoTMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
-        myAWSIoTMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
-        myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
-        myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
+       # AWSIoTMQTTClient connection configuration
+       myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)
+       myAWSIoTMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
+       myAWSIoTMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
+       myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
+       myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
-        # Connect and subscribe to AWS IoT
-        myAWSIoTMQTTClient.connect()
-        time.sleep(2)
+       # Connect and subscribe to AWS IoT
+       myAWSIoTMQTTClient.connect()
+       time.sleep(2)
 
-        # Publish to the same topic in a loop forever
-        loopCount = 0
-        while True:
-            message = {}
+       # Publish to the same topic in a loop forever
+       loopCount = 0
+       while True:
+         message = {}
 
-            # Ottawa neighbourhood
-            message['lon'] = random.randrange(-7584, -7540)/100
-            message['lat'] = random.randrange(4530, 4553)/100
+         # Ottawa neighbourhood
+         message['lon'] = random.randrange(-7584, -7540)/100
+         message['lat'] = random.randrange(4530, 4553)/100
 
-            message['sequence'] = loopCount
-            messageJson = json.dumps(message)
-            myAWSIoTMQTTClient.publish(topic, messageJson, 1)
-            print('Published topic %s: %s\n' % (topic, messageJson))
-            loopCount += 1
-            time.sleep(5)
+         message['sequence'] = loopCount
+         messageJson = json.dumps(message)
+         myAWSIoTMQTTClient.publish(topic, messageJson, 1)
+         print('Published topic %s: %s\n' % (topic, messageJson))
+         loopCount += 1
+         time.sleep(5)
         
 3. Copy the certificate and private key for the device to the same folder in your Cloud9 env where you have created the above file. Make sure you rename the file names to be *GeofencedDevice1.cert.pem* (for the certificate) and *GeofencedDevice1.private.key* (for the private key).
 
