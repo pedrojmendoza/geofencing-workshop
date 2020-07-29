@@ -1,6 +1,6 @@
 Now we are ready to simulate a real device. We will use the same [Cloud9](https://aws.amazon.com/cloud9/) environment as we used for deploying the geofences web app.
 
-On your Cloud9 env, open a Terminal window and follow the steps below:
+On your Cloud9 env, open a new Terminal window and follow the steps below:
 
 1. Install AWS IoT SDK for Python by running `sudo pip install AWSIoTPythonSDK`
 
@@ -79,6 +79,6 @@ On your Cloud9 env, open a Terminal window and follow the steps below:
         
 3. Copy the certificate and private key for the device to the same folder in your Cloud9 env where you have created the above file. Make sure you rename the file names to be *GeofencedDevice1.cert.pem* and *GeofencedDevice1.private.key*       
 
-4. Download the root CA for the AWS IoT Core's certificate -> `curl https://www.amazontrust.com/repository/AmazonRootCA1.pem > root-CA.crt`
+4. Download the root CA for the AWS IoT Core's certificate by running `curl https://www.amazontrust.com/repository/AmazonRootCA1.pem > root-CA.crt`
 
-5. Start the device simulation (make sure you replace the placeholder with the correct endpoint from your AWS IoT Core, including region) -> `python spatialPub.py -e <YOUR-AWS-IOT-CORE-ENDPOINT> -r root-CA.crt -c GeofencedDevice1.cert.pem -k GeofencedDevice1.private.key`
+5. Start the device simulation (make sure you replace the placeholder with the correct endpoint from your AWS IoT Core, including region) by running `python spatialPub.py -e <YOUR-AWS-IOT-CORE-ENDPOINT> -r root-CA.crt -c GeofencedDevice1.cert.pem -k GeofencedDevice1.private.key`
