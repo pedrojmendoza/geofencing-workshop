@@ -77,13 +77,21 @@ Lets first propagate the geofences geometries from the DDB table where our webap
     - Click on *+ Add trigger* and select the *DynamoDB* trigger configuration from the dropdown.
     - Select the geofences table (should start with *Geofence-* and click on *Add*.
 
-5. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
+5. Lets define a new geofence using the web app we created before
 
-    5.1. Go to the [Athena console](https://console.aws.amazon.com/athena/)
+    5.1. Go to the URL for the published application.
+    
+    5.2. Create a new user to be able to access the application.
+    
+    5.3. Once in the application, draw a new geofence covering the Ottawa area (close to what is shown in this [picture](./Ottawa.png)) and save it with the name *Ottawa*
 
-    5.2. In order for Athena to be able to properly operate, you need to provide a location for query results. Click on *set up a query result location in Amazon S3* and enter the S3 URI of your bucket like the following *s3://<REPLACE_WITH_YOUR_BUCKET_NAME>/*
+6. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
-    5.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
+    6.1. Go to the [Athena console](https://console.aws.amazon.com/athena/)
+
+    6.2. In order for Athena to be able to properly operate, you need to provide a location for query results. Click on *set up a query result location in Amazon S3* and enter the S3 URI of your bucket like the following *s3://<REPLACE_WITH_YOUR_BUCKET_NAME>/*
+
+    6.3. Enter the following code in the query editor (make sure you replace the placeholder with your bucket name).
 
         CREATE external TABLE IF NOT EXISTS regions
          (
@@ -95,29 +103,29 @@ Lets first propagate the geofences geometries from the DDB table where our webap
         OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
         LOCATION 's3://<REPLACE_WITH_YOUR_BUCKET_NAME>/Canada/';
 
-    5.4. Click on *Run query*
+    6.4. Click on *Run query*
 
-6. Similarly to step 3, now lets create a new IAM role for the lambda function that will be performing the spatial querying.
+7. Similarly to step 3, now lets create a new IAM role for the lambda function that will be performing the spatial querying.
 
-    6.1. Open the [roles page](https://console.aws.amazon.com/iam/home?#/roles) in the IAM console.
+    7.1. Open the [roles page](https://console.aws.amazon.com/iam/home?#/roles) in the IAM console.
 
-    6.2. Choose Create role.
+    7.2. Choose Create role.
 
-    6.3. Create a role with the following properties.
+    7.3. Create a role with the following properties.
     - Trusted entity – Lambda.
     - Permissions – *AmazonS3FullAccess*, *AmazonAthenaFullAccess*, *AWSIoTConfigReadOnlyAccess* and *AWSGlueConsoleFullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
     - Role name – *lambda-spatial-query-role*.
 
-7. We are almost done, next step is create a new lambda function for querying the geofences using as input the coordinates of a device.
+8. We are almost done, next step is create a new lambda function for querying the geofences using as input the coordinates of a device.
 
-    7.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
+    8.1. Open the [Lambda console](https://console.aws.amazon.com/lambda/)
 
-    7.2. Choose Create function and use the following parameters.
+    8.2. Choose Create function and use the following parameters.
     - Enter *SpatialQuery* as function name.
     - Select *Python 3.8* as Runtime. 
     - Select *Use an existing role*, pick the *lambda-spatial-query-role* from the dropdown and click on *Create function*
 
-    7.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save* (make sure you remove any leading space on the pasted code).
+    8.3. Once the function is created, replace its code with the below code, update the <REPLACE_WITH_YOUR_BUCKET_NAME> literal with the S3 bucket you created above and click on *Save* (make sure you remove any leading space on the pasted code).
 
         import time
         import boto3
@@ -202,15 +210,15 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
             return region
 
-    7.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
+    8.4. Click *Edit* on the *Basic settings* section and increase the Timeout to be *30* seconds.
 
-8. Finally, create a new rule in IoT Core
+9. Finally, create a new rule in IoT Core
 
-    8.1. Open the [IoT console](https://console.aws.amazon.com/iot/)
+    9.1. Open the [IoT console](https://console.aws.amazon.com/iot/)
 
-    8.2. Click on *Act* and then on *Rules*
+    9.2. Click on *Act* and then on *Rules*
 
-    8.3. Click on *Create* and enter the following values.
+    9.3. Click on *Create* and enter the following values.
     - Name - *Geofencing*
     - Rule query statement, enter the below query. Make sure to replace the region and account number placeholders with the correct one (you can also copy and paste the ARN of the function created in 7). - `SELECT topic(3) as device, timestamp()/1000 as timestamp, lon, lat, aws_lambda("arn:aws:lambda:<REPLACE_WITH_YOUR_REGION>:<REPLACE_WITH_YOUR_ACCOUNT_NUMBER>:function:SpatialQuery", {"device":topic(3),"lon":lon,"lat":lat}) as geofencing_result FROM 'data/geofencing/+/geolocation'`
     - Click on *Add actions* (under the *Set one or more actions* section) and select the *Republish to an AWS IoT topic* action.
