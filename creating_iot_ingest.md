@@ -83,7 +83,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
     
     5.2. Create a new user to be able to access the application.
     
-    5.3. Once in the application, draw a new geofence covering the Ottawa area (close to what is shown in this [picture](./Ottawa.png)) and save it with the name *Ottawa*
+    5.3. Once in the application, select the drawing tool (on the right upper corner) and draw a new geofence covering the Ottawa area (close to what is shown in this [picture](./Ottawa.png)), double click to finish drawing and save the geofence with the name *Ottawa*
 
 6. Now that we have our data syncronized in S3, we can proceed and create the Athena resources to point to the S3 object with the geometries so we can execute queries against it.
 
