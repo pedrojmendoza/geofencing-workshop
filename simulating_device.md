@@ -4,7 +4,7 @@ On your Cloud9 env, open a new Terminal window and follow the steps below:
 
 1. Install AWS IoT SDK for Python by running `sudo pip install AWSIoTPythonSDK`
 
-2. Create a new file, paste the content below on it and save it as *spatialPub.py*
+2. Create a new file, paste the content below on it and save it as *spatialPub.py* (make sure to remove any leading space on the code being pasted)
 
         from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
         import logging
