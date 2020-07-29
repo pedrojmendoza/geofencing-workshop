@@ -10,7 +10,7 @@ In order to create it, please follow the instructions detailed in the [Amplify R
 
 3. Once you are done with the *Set up fullstack project* step and working on the [Connect the API and database to the app](https://docs.amplify.aws/start/getting-started/data-model/q/integration/react) section, you will be asked about the expiration of your API key, you might want to use a value larger than 7 days for its expiration (we used 1 year expiration instead). 
 
-Before the initial *amplify push* to deploy the backend), please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
+Before the initial *amplify push* to deploy the backend, please replace the contents of the **amplify/backend/api/myapi/schema.graphql** file with the following definition:
 
 ```
 type Geofence @model {
