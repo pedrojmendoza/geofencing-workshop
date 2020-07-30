@@ -2,7 +2,7 @@ The next section is about routing the messages coming from the devices and figur
 
 Lets first propagate the geofences geometries from the DDB table where our webapp's API has stored these into an S3 bucket that can be accessed by our geospatial queries system.
 
-1. Create a new S3 bucket, make sure you create it on the same region you created the previous resources and select a globally unique name for your bucket. You can follow the instructions at [Creating a bucket](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html)
+1. Create a new S3 bucket, make sure you create it on the same region you created the previous resources and select a globally unique name for your bucket. You can follow the instructions at [Creating a bucket](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html).
 
 2. We will need a baseline JSON file to store the geofences geometries. Initially it will only contain some metadata and will be incrementally extended as the new geofences are added using the webapp. 
 
@@ -113,7 +113,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     7.3. Create a role with the following properties.
     - Trusted entity – Lambda.
-    - Permissions – *AmazonS3FullAccess*, *AmazonAthenaFullAccess*, *AWSIoTConfigReadOnlyAccess* and *AWSGlueConsoleFullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
+    - Permissions – *AmazonS3FullAccess*, *AmazonAthenaFullAccess*, *AWSIoTConfigReadOnlyAccess* and *CloudWatchLogsFullAccess* (please note that these permissions are not recommended for a PROD environment as these are too permissive).
     - Role name – *lambda-spatial-query-role*
 
 8. We are almost done, next step is create a new lambda function for querying the geofences using as input the coordinates of a device.
