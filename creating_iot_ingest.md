@@ -12,7 +12,7 @@ Lets first propagate the geofences geometries from the DDB table where our webap
 
     2.3. Click on *Create Folder*, name it *Canada* and click *Save*
 
-    2.4. The baseline file is part of this repository and is named *regions.json*, you can download it by running `wget https://raw.githubusercontent.com/pedrojmendoza/geofencing-workshop/master/regions.json` and then upload it to your S3 bucket (inside the *Cananda* folder) by dragging and dropping it.
+    2.4. The baseline file is part of this repository and is named *regions.json*, you can download it by running `wget https://raw.githubusercontent.com/pedrojmendoza/geofencing-workshop/master/regions.json` and then upload it to your S3 bucket (inside the *Canada* folder) by dragging and dropping it.
 
 3. Next, create a new IAM role for the lambda function that will be performing the data propagation.
 
